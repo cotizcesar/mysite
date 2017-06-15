@@ -17,9 +17,10 @@ def detail(request, question_id): # ex: /polls/[0-9]/
     # return: Renderiza la request en el archivo /templates/polls/detail.html inyectandole todo lo que viene en {'question': question}. No se guarda en una variable debido a que solo hay 1 resultado (DRY).
     return render(request, 'polls/detail.html', {'question': question})
 
-def results(request, question_id):
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % question_id)
+def results(request, question_id): # ex: /polls/[0-9]/results/
+    question = get_object_or_404(Question, pk=question_id)
+    # return: Renderiza la request en el archivo /templates/polls/results.html inyectandole todo lo que viene en {'question': question}. No se guarda en una variable debido a que solo hay 1 resultado (DRY).
+    return render(request, 'polls/results.html', {'question': question})
 
 def vote(request, question_id): # ex: /polls/[0-9]/vote
     # question: Obtiene el objeto Question, si no existe llevame a un error 404. El pk (primary key) es igual a question_id
