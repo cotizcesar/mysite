@@ -30,7 +30,7 @@ def vote(request, question_id): # ex: /polls/[0-9]/vote
     # except: Si hay un error de tipeo en el form que viene de detail.html va mostrar un error, igualmente si el objeto 'Choice' no existe.
     except(KeyError, Choice.DoesNotExist):
         # return: Si hay error como mencione arriba me vas a renderrizar el archivo polls/detail.html y vas a inyectar el siguiente objeto 'question' y  me vas a dar el mensaje de error "You didn't select a choice."
-        return render(request 'polls/detail.html', {
+        return render(request, 'polls/detail.html', {
             'question': question,
             'error_message': "You didn't select a choice.",
         })
