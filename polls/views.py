@@ -39,5 +39,6 @@ def vote(request, question_id): # ex: /polls/[0-9]/vote
         selected_choice.votes += 1
         # selected_choice.save: Guardas el cambio.
         selected_choice.save()
+    # Nota de Django Docs: Always return an HttpResponseRedirect after successfully dealing with POST data. This prevents data from being posted twice if a user hits the Back button.
     # return: Retornamos a los resultados con el question.id para saber cual es id por el que se esta votando.
     return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
