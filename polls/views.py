@@ -1,26 +1,34 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
+from django.views import generic
+
 from .models import Choice, Question
 
-def index(request): # ex: /polls/
-    # latest_question_list: Aqui me vas a traer objetos del modelo Question, me los vas a organizar por pub_date y me traes 5 en total.
-    latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    # context: Vas hacer una lista de latest_question_list y me lo vas almacenar en context.
-    context = {'latest_question_list': latest_question_list}
-    # return: Renderiza la request en el archivo /templates/polls/index.html inyectandole todo lo que viene en context.
-    return render(request, 'polls/index.html', context)
+def index(request):
+    return HttpResponse("Hello, world. You're at the poll index.")
 
-def detail(request, question_id): # ex: /polls/[0-9]/
-    # question: Obtiene el objeto Question, si no existe llevame a un error 404. El pk (primary key) es igual a question_id
-    question = get_object_or_404(Question, pk=question_id)
-    # return: Renderiza la request en el archivo /templates/polls/detail.html inyectandole todo lo que viene en {'question': question}. No se guarda en una variable debido a que solo hay 1 resultado (DRY).
-    return render(request, 'polls/detail.html', {'question': question})
+class IndexView(generic.ListView):
+    # template_name: Especificamos el template donde se va visualizar.
+    template_name = 'polls/index.html'
+    # context_object_name: Todo lo que venga de los objetos... lo metemos en una lista? (Repasar)
+    context_object_name = 'latest_question_list'
 
-def results(request, question_id): # ex: /polls/[0-9]/results/
-    question = get_object_or_404(Question, pk=question_id)
-    # return: Renderiza la request en el archivo /templates/polls/results.html inyectandole todo lo que viene en {'question': question}. No se guarda en una variable debido a que solo hay 1 resultado (DRY).
-    return render(request, 'polls/results.html', {'question': question})
+    def get_queryset(self):
+        # Regresame las ultimas 5 publicaciones
+        return Question.objects.order_by('-pub_date')[:5]
+
+class DetailView(generic.DetailView):
+    # model: Especificamos el modelo para la vista generica.
+    model = Question
+    # template_name: Especificamos el template donde se va visualizar.
+    template_name = 'polls/detail.html'
+
+class ResultsView(generic.DetailView):
+    # model: Especificamos el modelo para la vista generica.
+    model = Question
+    # template_name: Especificamos el template donde se va visualizar.
+    template_name = 'polls/results.html'
 
 def vote(request, question_id): # ex: /polls/[0-9]/vote
     # question: Obtiene el objeto Question, si no existe llevame a un error 404. El pk (primary key) es igual a question_id
@@ -43,3 +51,25 @@ def vote(request, question_id): # ex: /polls/[0-9]/vote
     # Nota de Django Docs: Always return an HttpResponseRedirect after successfully dealing with POST data. This prevents data from being posted twice if a user hits the Back button.
     # return: Retornamos a los resultados con el question.id para saber cual es id por el que se esta votando, gracias a HttpResponseRedirect. ex: /polls/3/results/
     return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+
+"""
+OLD CODE:
+def index(request): # ex: /polls/
+    # latest_question_list: Aqui me vas a traer objetos del modelo Question, me los vas a organizar por pub_date y me traes 5 en total.
+    latest_question_list = Question.objects.order_by('-pub_date')[:5]
+    # context: Vas hacer una lista de latest_question_list y me lo vas almacenar en context.
+    context = {'latest_question_list': latest_question_list}
+    # return: Renderiza la request en el archivo /templates/polls/index.html inyectandole todo lo que viene en context.
+    return render(request, 'polls/index.html', context)
+
+def detail(request, question_id): # ex: /polls/[0-9]/
+    # question: Obtiene el objeto Question, si no existe llevame a un error 404. El pk (primary key) es igual a question_id
+    question = get_object_or_404(Question, pk=question_id)
+    # return: Renderiza la request en el archivo /templates/polls/detail.html inyectandole todo lo que viene en {'question': question}. No se guarda en una variable debido a que solo hay 1 resultado (DRY).
+    return render(request, 'polls/detail.html', {'question': question})
+
+def results(request, question_id): # ex: /polls/[0-9]/results/
+    question = get_object_or_404(Question, pk=question_id)
+    # return: Renderiza la request en el archivo /templates/polls/results.html inyectandole todo lo que viene en {'question': question}. No se guarda en una variable debido a que solo hay 1 resultado (DRY).
+    return render(request, 'polls/results.html', {'question': question})
+"""
